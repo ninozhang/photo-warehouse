@@ -1,13 +1,16 @@
 var path = require('path'),
+    fs = require('fs'),
 
     _ = require('underscore'),
     async = require('async'),
-
     ExifImage = require('exif').ExifImage,
-
     chokidar = require('chokidar'),
     mysql = require('mysql'),
     md5File = require('md5-file'),
+    sizeOf = require('image-size'),
+
+    IPHONE_RATIO = 1.775,
+    IPAD_RATIO = 0.75,
 
     INPUT_DIR = 'D:\\photo\\input',
     OUTPUT_DIR = 'D:\\photo\\output',
@@ -79,19 +82,36 @@ function exif(file, callback) {
 function extract(file, callback) {
     async.series([
         function (callback) {
-            md5File(file, callback);
+            md5File(file, function (err, md5) {
+                callback(err, {
+                    id: md5,
+                    md5: md5
+                });
+            });
+        },
+        // 获取文件信息
+        function (callback) {
+            var stat = fs.statSync(file);
+            callback(null, {
+                size: stat.size,
+                time: new Date(stat.mtime).getTime()
+            });
+        },
+        // 获取图片高宽
+        function (callback) {
+            console.log(sizeOf(file));
+            callback(null, sizeOf(file));
         },
         function (callback) {
             exif(file, callback);
         }
     ], function (err, results) {
-        var md5 = results[0],
-            exif = results[1],
-
-            data = _.extend({
-                id: md5,
-                md5: md5
-            }, exif),
+        console.log('error', err);
+        var data = _.extend({},
+                results[0],
+                results[1],
+                results[2],
+                results[3]),
             sql = 'INSERT INTO photo SET ?',
             connection = mysql.createConnection({
                 host: '127.0.0.1',
@@ -109,22 +129,30 @@ function extract(file, callback) {
 }
 
 function checkAndMakeFolder(dir) {
-
+    var stat = fs.statSync(dir);
+    console.log(dir);
 }
 
 function move(src, dest) {
-
+    fs.rename(src, dest, function (err) {
+        if (err) {
+            console.log('error', err);
+            throw err;
+        }
+        console.log('renamed complete');
+    });
 }
 
 function process(filename) {
     console.log('filename', filename);
     var file = path.resolve(INPUT_DIR, filename);
-    extract(file, function () {
-
-    });
+    console.log('file', file);
+    console.log('stat', extract(file));
+    
 }
 
 process('IMG_0117.JPG');
+process('IMG_0883.PNG');
 
 fileWatcher = chokidar.watch('file, dir', {
     persistent: true,

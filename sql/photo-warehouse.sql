@@ -1,5 +1,5 @@
 ﻿# Host: 127.0.0.1  (Version: 5.7.9-log)
-# Date: 2015-11-04 23:51:42
+# Date: 2015-12-20 01:02:07
 # Generator: MySQL-Front 5.3  (Build 4.234)
 
 /*!40101 SET NAMES utf8 */;
@@ -8,10 +8,14 @@
 # Structure for table "photo"
 #
 
-DROP TABLE IF EXISTS `photo`;
 CREATE TABLE `photo` (
   `id` char(32) NOT NULL DEFAULT '',
   `md5` varchar(32) DEFAULT NULL COMMENT '文件MD5戳',
+  `size` int(11) DEFAULT NULL COMMENT '文件大小',
+  `time` bigint(20) NOT NULL DEFAULT '0' COMMENT '修改时间',
+  `type` varchar(36) DEFAULT NULL COMMENT '文件类型',
+  `width` mediumint(9) NOT NULL DEFAULT '0' COMMENT '宽',
+  `height` mediumint(9) NOT NULL DEFAULT '0' COMMENT '高',
   `Make` varchar(255) DEFAULT NULL COMMENT '照相机制造商',
   `Model` varchar(255) DEFAULT NULL COMMENT '照相机型号',
   `Orientation` tinyint(3) DEFAULT NULL COMMENT '旋转',
