@@ -1,6 +1,8 @@
 var _ = require('underscore'),
     mysql = require('mysql'),
 
+    log = require('../log/log'),
+
     conf = require('../../conf'),
     
     pool;
