@@ -5,6 +5,11 @@
         "port": 7000,
         "secret": "123456"
     },
+    "path": {
+        "input": "D:\\photo\\input",
+        "output": "D:\\photo\\output",
+        "error": "D:\\photo\\error"
+    },
     "mysql": {
         "host": "127.0.0.1",
         "port": 3306,

@@ -1,6 +1,13 @@
 var _ = require('underscore'),
     ExifImage = require('exif').ExifImage;
 
+function fixTime(str) {
+    if (typeof str !== 'string') {
+        return str;
+    }
+    return str.replace(/(\d{4}):(\d{2}):(\d{2})/, '$1-$2-$3');
+}
+
 function exif(file, callback) {
     try {
         new ExifImage({
@@ -9,7 +16,7 @@ function exif(file, callback) {
             if (err) {
                 callback(err);
             } else {
-                callback(null, {
+                var data = {
                     Make: exif.image.Make,  // 照相机制造商
                     Model: exif.image.Model,  // 照相机型号
                     Orientation: exif.image.Orientation,  // 旋转
@@ -17,7 +24,7 @@ function exif(file, callback) {
                     YResolution: exif.image.YResolution,  // 垂直分辨率
                     ResolutionUnit: exif.image.ResolutionUnit,  // 分辨率单位
                     Software: exif.image.Software,  // 程序名称
-                    ModifyDate: exif.image.ModifyDate,  // 修改日期
+                    ModifyDate: fixTime(exif.image.ModifyDate),  // 修改日期
                     YCbCrPositioning: exif.image.YCbCrPositioning,
                     ExifOffset: exif.image.ExifOffset,
                     GPSInfo: exif.image.GPSInfo,
@@ -25,8 +32,8 @@ function exif(file, callback) {
                     FNumber: exif.exif.FNumber,  // 光圈值
                     ExposureProgram: exif.exif.ExposureProgram,  // 曝光程序
                     ISO: exif.exif.ISO,  // ISO
-                    DateTimeOriginal: exif.exif.DateTimeOriginal,  // 原始时间
-                    CreateDate: exif.exif.CreateDate,  // 拍摄日期
+                    DateTimeOriginal: fixTime(exif.exif.DateTimeOriginal),  // 原始时间
+                    CreateDate: fixTime(exif.exif.CreateDate),  // 拍摄日期
                     ShutterSpeedValue: exif.exif.ShutterSpeedValue,  // 快门速度
                     BrightnessValue: exif.exif.BrightnessValue,  // 亮度
                     ExposureCompensation: exif.exif.ExposureCompensation,  // 曝光补偿
@@ -53,8 +60,10 @@ function exif(file, callback) {
                     GPSImgDirection: exif.gps.GPSImgDirection,  // GPS方向
                     GPSDestBearingRef: exif.gps.GPSDestBearingRef,  // GPS轴向参考
                     GPSDestBearing: exif.gps.GPSDestBearing,  // GPS轴向
-                    GPSDateStamp: exif.gps.GPSDateStamp,  // GPS日期戳
-                });
+                    GPSDateStamp: fixTime(exif.gps.GPSDateStamp),  // GPS日期戳
+                };
+
+                callback(null, data);
             }
         });
     } catch (err) {

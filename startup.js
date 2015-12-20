@@ -5,10 +5,7 @@ var fs = require('fs'),
 
     commander = require('commander'),
     _ = require('underscore'),
-    async = require('async'),
     chokidar = require('chokidar'),
-    md5File = require('md5-file'),
-    sizeOf = require('image-size'),
 
     conf = require('./conf'),
     cron = require('./cron'),
@@ -18,12 +15,11 @@ var fs = require('fs'),
     exif = require('./components/exif/exif'),
     fileWatcher = require('./components/file-watcher/file-watcher'),
 
+    photoQueue = require('./components/photo-queue/photo-queue'),
+
 
     IPHONE_RATIO = 1.775,
     IPAD_RATIO = 0.75,
-
-    INPUT_DIR = 'D:\\photo\\input',
-    OUTPUT_DIR = 'D:\\photo\\output',
 
     DEV = 'development',
     TEST = 'test',
@@ -53,83 +49,20 @@ function detectMode(m) {
     return DEV;
 }
 
-
-function extract(file, callback) {
-    async.series([
-        // 计算文件 MD5
-        function (callback) {
-            md5File(file, function (err, md5) {
-                callback(err, {
-                    id: md5,
-                    md5: md5
-                });
-            });
-        },
-        // 获取文件信息
-        function (callback) {
-            var stat = fs.statSync(file);
-            callback(null, {
-                size: stat.size,
-                time: new Date(stat.mtime).getTime()
-            });
-        },
-        // 获取图片高宽
-        function (callback) {
-            console.log(sizeOf(file));
-            callback(null, sizeOf(file));
-        },
-        // 获取照片的 EXIF
-        function (callback) {
-            exif(file, callback);
-        }
-    ], function (err, results) {
-        console.log('error', err);
-        var data = _.extend({},
-                results[0],
-                results[1],
-                results[2],
-                results[3]);
-        photo.findById(data.md5, function (err, results) {
-            if (err) {
-                log.error('FIND_BY_ID_ERROR', err);
-                return;
-            }
-            if (results.length === 0) {
-                photo.save(data, function (err, results) {
-                    log.info('PHOTO_SAVED', err, results);
-                });
-            } else {
-                photo.update(data.id, data, function (err, results) {
-                    log.info('PHOTO_UPDATED', err, results);
-                });
-            }
-        })
-    });
-}
-
 function checkAndMakeFolder(dir) {
     var stat = fs.statSync(dir);
     console.log(dir);
 }
 
-function move(src, dest) {
-    fs.rename(src, dest, function (err) {
-        if (err) {
-            console.log('error', err);
-            throw err;
-        }
-        console.log('renamed complete');
-    });
-}
-
 function onFileAdd(filename, stats) {
-    var file = path.resolve(INPUT_DIR, filename);
+    var file = path.resolve(conf.path.input, filename);
     log.info('FILE [' + file + '] ADD, EXTRACT INFO');
-    extract(file);
+    photoQueue.push(file);
 }
 
 function start() {
-    fileWatcher.watch(INPUT_DIR, onFileAdd);
+    log.info('开始监听文件夹变更', conf.path.input);
+    fileWatcher.watch(conf.path.input, onFileAdd);
 }
 
 if (require.main === module) {
