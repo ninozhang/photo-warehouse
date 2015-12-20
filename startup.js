@@ -11,9 +11,12 @@ var fs = require('fs'),
     sizeOf = require('image-size'),
 
     conf = require('./conf'),
+    cron = require('./cron'),
+    log = require('./components/log/log'),
     mysql = require('./components/mysql/mysql'),
     photo = require('./components/photo/photo'),
     exif = require('./components/exif/exif'),
+    fileWatcher = require('./components/file-watcher/file-watcher'),
 
 
     IPHONE_RATIO = 1.775,
@@ -34,9 +37,7 @@ var fs = require('fs'),
 
     pidFile,
     mode,
-    port,
-    
-    fileWatcher;
+    port;
 
 function detectMode(m) {
     if (!m) {
@@ -88,9 +89,21 @@ function extract(file, callback) {
                 results[1],
                 results[2],
                 results[3]);
-        photo.save(data, function (err, results) {
-            console.log('PHOTO_SAVE', err, results);
-        });
+        photo.findById(data.md5, function (err, results) {
+            if (err) {
+                log.error('FIND_BY_ID_ERROR', err);
+                return;
+            }
+            if (results.length === 0) {
+                photo.save(data, function (err, results) {
+                    log.info('PHOTO_SAVED', err, results);
+                });
+            } else {
+                photo.update(data.id, data, function (err, results) {
+                    log.info('PHOTO_UPDATED', err, results);
+                });
+            }
+        })
     });
 }
 
@@ -109,49 +122,14 @@ function move(src, dest) {
     });
 }
 
-function read(filename) {
-    console.log('filename', filename);
+function onFileAdd(filename, stats) {
     var file = path.resolve(INPUT_DIR, filename);
-    console.log('file', file);
-    console.log('stat', extract(file));
-    
-}
-
-function watch() {
-    fileWatcher = chokidar.watch('file, dir', {
-        persistent: true,
-
-        ignored: '*.txt',
-        ignoreInitial: false,
-        followSymlinks: true,
-        cwd: '.',
-
-        usePolling: true,
-        interval: 100,
-        binaryInterval: 300,
-        alwaysStat: false,
-        depth: 99,
-        awaitWriteFinish: {
-            stabilityThreshold: 2000,
-            pollInterval: 100
-        },
-
-        ignorePermissionErrors: false,
-        atomic: true
-    });
-
-    fileWatcher.on('add', function(path, stats) {
-    });
-
-    fileWatcher.on('change', function(path, stats) {
-    });
-
-    fileWatcher.add(INPUT_DIR);
+    log.info('FILE [' + file + '] ADD, EXTRACT INFO');
+    extract(file);
 }
 
 function start() {
-    read('IMG_0117.JPG');
-    read('IMG_0883.PNG');
+    fileWatcher.watch(INPUT_DIR, onFileAdd);
 }
 
 if (require.main === module) {
@@ -218,9 +196,15 @@ if (require.main === module) {
     // 将参数放到配置中
     conf.mode = mode;
     conf.server.port = port;
+    conf.log = log;
 
     // 初始化数据库
-    mysql.init();
+    mysql.init(function() {
+        log.info('数据库初始化完成');
+    });
+
+    // 初始化定时任务
+    cron();
 
     // 启动小蜜蜂
     start();

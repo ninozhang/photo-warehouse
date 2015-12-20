@@ -41,12 +41,12 @@ function exif(file, callback) {
                     LensMake: exif.exif.LensMake,  // 镜头制造商
                     LensModel: exif.exif.LensModel,  // 镜头型号
                     GPSLatitudeRef: exif.gps.GPSLatitudeRef,  // GPS纬度参考
-                    GPSLatitude: exif.gps.GPSLatitude.join(','),  // GPS纬度
+                    GPSLatitude: exif.gps.GPSLatitude && exif.gps.GPSLatitude.join(','),  // GPS纬度
                     GPSLongitudeRef: exif.gps.GPSLongitudeRef,  // GPS经度参考
-                    GPSLongitude: exif.gps.GPSLongitude.join(','),  // GPS经度
+                    GPSLongitude: exif.gps.GPSLongitude && exif.gps.GPSLongitude.join(','),  // GPS经度
                     GPSAltitudeRef: exif.gps.GPSAltitudeRef,  // GPS高度参考
                     GPSAltitude: exif.gps.GPSAltitude,  // GPS高度
-                    GPSTimeStamp: exif.gps.GPSTimeStamp.join(','),  // GPS时间戳
+                    GPSTimeStamp: exif.gps.GPSTimeStamp && exif.gps.GPSTimeStamp.join(','),  // GPS时间戳
                     GPSSpeedRef: exif.gps.GPSSpeedRef,  // GPS速度参考
                     GPSSpeed: exif.gps.GPSSpeed,  // GPS速度
                     GPSImgDirectionRef: exif.gps.GPSImgDirectionRef,  // GPS方向参考

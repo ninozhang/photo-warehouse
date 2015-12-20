@@ -11,5 +11,8 @@
         "database": "photo-warehouse",
         "user": "root",
         "password": "nino1234"
+    },
+    "cron": {
+        "interval": 1000
     }
 }
