@@ -20,7 +20,10 @@ module.exports = function () {
         return;
     }
 
-    if (file.indexOf('humbs.db') > -1) {
+    // 剔除无效文件
+    if (file.indexOf('.db') > -1 ||
+        file.indexOf('.ini') > -1 ||
+        file.indexOf('.DS_Store') > -1) {
         log.warn('无效文件', file, '删除');
         photoStore.del(file);
         return;
@@ -41,6 +44,8 @@ module.exports = function () {
             });
             return;
         }
+
+        // TODO 是否屏幕截图
 
         // 保存或更新数据库
         photo.findById(data.id, function (err, results) {

@@ -10,7 +10,6 @@ function checkAndMakeDir(dir) {
         dir += '/' + part;
         try {
             stat = fs.statSync(dir);
-            console.log(dir, stat);
             if (stat.isDirectory()) {
 
             }

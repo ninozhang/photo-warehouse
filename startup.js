@@ -5,21 +5,12 @@ var fs = require('fs'),
 
     commander = require('commander'),
     _ = require('underscore'),
-    chokidar = require('chokidar'),
+    log = require('./components/log/log'),
+    fileWatcher = require('./components/file-watcher/file-watcher'),
+    photoQueue = require('./components/photo-queue/photo-queue'),
 
     conf = require('./conf'),
     cron = require('./cron'),
-    log = require('./components/log/log'),
-    mysql = require('./components/mysql/mysql'),
-    photo = require('./components/photo/photo'),
-    exif = require('./components/exif/exif'),
-    fileWatcher = require('./components/file-watcher/file-watcher'),
-
-    photoQueue = require('./components/photo-queue/photo-queue'),
-
-
-    IPHONE_RATIO = 1.775,
-    IPAD_RATIO = 0.75,
 
     DEV = 'development',
     TEST = 'test',
@@ -47,11 +38,6 @@ function detectMode(m) {
         }
     }
     return DEV;
-}
-
-function checkAndMakeFolder(dir) {
-    var stat = fs.statSync(dir);
-    console.log(dir);
 }
 
 function onFileAdd(filename, stats) {
