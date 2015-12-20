@@ -1,0 +1,15 @@
+{
+    "env": "development",
+    "server": {
+        "root": null,
+        "port": 7000,
+        "secret": "123456"
+    },
+    "mysql": {
+        "host": "127.0.0.1",
+        "port": 3306,
+        "database": "photo-warehouse",
+        "user": "root",
+        "password": "nino1234"
+    }
+}
