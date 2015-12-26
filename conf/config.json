@@ -7,7 +7,8 @@
     },
     "path": {
         "input": "D:\\photo\\input",
-        "output": "D:\\photo\\output",
+        "photo": "D:\\photo\\photo",
+        "screenshot": "D:\\photo\\screenshot",
         "error": "D:\\photo\\error"
     },
     "mysql": {

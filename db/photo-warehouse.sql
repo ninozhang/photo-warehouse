@@ -1,5 +1,5 @@
 ﻿# Host: 127.0.0.1  (Version: 5.7.9-log)
-# Date: 2015-12-21 00:09:49
+# Date: 2015-12-26 23:36:01
 # Generator: MySQL-Front 5.3  (Build 4.234)
 
 /*!40101 SET NAMES utf8 */;
@@ -68,6 +68,30 @@ CREATE TABLE `photo` (
   `GPSDestBearingRef` varchar(255) DEFAULT NULL COMMENT 'GPS轴向参考',
   `GPSDestBearing` varchar(255) DEFAULT NULL COMMENT 'GPS轴向',
   `GPSDateStamp` varchar(255) DEFAULT NULL COMMENT 'GPS日期戳',
-  `isDel` tinyint(1) NOT NULL DEFAULT '0',
+  `isDel` tinyint(1) NOT NULL DEFAULT '0' COMMENT '删除',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+#
+# Structure for table "screenshot"
+#
+
+CREATE TABLE `screenshot` (
+  `id` char(32) NOT NULL DEFAULT '',
+  `md5` varchar(32) DEFAULT NULL COMMENT '文件MD5戳',
+  `path` varchar(3000) DEFAULT NULL COMMENT '文件路径',
+  `size` int(11) DEFAULT NULL COMMENT '文件大小',
+  `time` bigint(20) NOT NULL DEFAULT '0' COMMENT '修改时间',
+  `year` smallint(6) DEFAULT NULL COMMENT '年',
+  `month` tinyint(3) DEFAULT NULL COMMENT '月',
+  `date` tinyint(3) DEFAULT NULL COMMENT '日',
+  `day` tinyint(3) DEFAULT NULL COMMENT '周几',
+  `hour` tinyint(3) DEFAULT NULL COMMENT '小时',
+  `minute` tinyint(3) DEFAULT NULL COMMENT '分钟',
+  `second` tinyint(3) DEFAULT NULL COMMENT '秒',
+  `type` varchar(36) DEFAULT NULL COMMENT '文件类型',
+  `width` mediumint(9) NOT NULL DEFAULT '0' COMMENT '宽',
+  `height` mediumint(9) NOT NULL DEFAULT '0' COMMENT '高',
+  `isDel` tinyint(1) NOT NULL DEFAULT '0' COMMENT '删除',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;

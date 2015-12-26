@@ -1,13 +1,13 @@
 var _ = require('underscore'),
 
-    queue = [];
+  queue = [];
 
 function pop() {
-    return queue.pop();
+  return queue.pop();
 }
 exports.pop = pop;
 
 function push(file) {
-    queue.push(file);
+  queue.push(file);
 }
 exports.push = push;
