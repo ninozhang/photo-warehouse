@@ -60,11 +60,17 @@ var _ = require('underscore'),
 
 module.exports = function (values) {
   var type = values.type,
+    Make = values.Make,
+    Model = values.Model,
     width = values.width,
     height = values.height;
 
   if (type && type.toLowerCase() === 'png') {
     return true;
+  }
+
+  if (Make || Model) {
+    return false;
   }
 
   if (width && height) {

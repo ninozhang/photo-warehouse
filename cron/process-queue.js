@@ -23,8 +23,10 @@ module.exports = function () {
   }
 
   // 剔除无效文件
-  if (file.indexOf('.db') > -1 ||
+  if (file.indexOf('.') === 0 ||
+    file.indexOf('.db') > -1 ||
     file.indexOf('.ini') > -1 ||
+    file.indexOf('.THM') > -1 ||
     file.indexOf('.DS_Store') > -1) {
     log.warn('无效文件', file, '删除');
     store.del(file);
@@ -35,8 +37,15 @@ module.exports = function () {
   extract(file, function (err, data) {
     // 生成保存路径
     try {
-    var filename = [data.year, data.month, data.date, data.hour, data.minute, data.second, data.md5.substring(0, 4) + '.' + data.type].join('_');
-    data.path = [data.year, data.month, data.date, filename].join('/');
+      var filename = [data.year, data.month, data.date, data.hour, data.minute, data.second, data.md5.substring(0, 4) + '.' + data.type].join('_');
+      data.path = [data.year, data.month, data.date, filename].join('/');
+    } catch(err) {
+      var pathParse = path.parse(file),
+        newFile = path.resolve(conf.path.error, pathParse.base);
+      store.move(file, newFile, function (err) {
+        log.error('FILE_MOVE_TO_ERROR', newFile, err);
+      });
+      return;
     }
 
     if (err) {
@@ -52,6 +61,27 @@ module.exports = function () {
     // 是屏幕截图
     if (isScreenshot(data)) {
       // 保存或更新数据库
+      var fullData = data;
+      data = {};
+      _.each([
+        'id',
+        'md5',
+        'path',
+        'size',
+        'time',
+        'year',
+        'month',
+        'date',
+        'day',
+        'hour',
+        'minute',
+        'second',
+        'type',
+        'width',
+        'height'
+      ], function (name) {
+        data[name] = fullData[name];
+      });
       screenshot.findById(data.id, function (err, results) {
         if (results.length === 0) {
           log.info('截图' + data.id + '不存在，保存信息并移动文件');
