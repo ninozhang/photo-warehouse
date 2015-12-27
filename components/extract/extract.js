@@ -61,6 +61,16 @@ function extract(file, callback) {
         results[2],
         results[3]);
 
+    if (!data.width &&
+        data.ExifImageWidth) {
+      data.width = data.ExifImageWidth;
+    }
+
+    if (!data.height &&
+        data.ExifImageHeight) {
+      data.height = data.ExifImageHeight;
+    }
+
     var time = data.DateTimeOriginal || data.CreateDate || data.time,
       date = new Date(time);
     
