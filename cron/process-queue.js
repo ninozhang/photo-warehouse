@@ -33,6 +33,8 @@ module.exports = function () {
     return;
   }
 
+  log.info('开始处理文件', file);
+
   // 提取文件信息
   extract(file, function (err, data) {
     // 生成保存路径

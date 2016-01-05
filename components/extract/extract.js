@@ -34,9 +34,19 @@ function extract(file, callback) {
     },
     // 获取图片高宽
     function (callback) {
-      try {
-        callback(null, sizeOf(file));
-      } catch(err) {
+      if (ext === '.jpg'
+        || ext === '.jpeg'
+        || ext === '.bmp'
+        || ext === '.png'
+        || ext === '.gif') {
+        try {
+          callback(null, sizeOf(file));
+        } catch(err) {
+          callback(null, {
+            type: ext.substring(1)
+          });
+        }
+      } else {
         callback(null, {
           type: ext.substring(1)
         });
